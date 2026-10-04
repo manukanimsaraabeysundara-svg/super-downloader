@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Downloader - TikTok FB YT Insta</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui;background:#000;color:#fff;min-height:100vh;display:flex;justify-content:center;padding:15px}
+.box{width:100%;max-width:480px;background:#111;border:1px solid #222;border-radius:20px;padding:22px;margin-top:20px}
+h1{text-align:center;font-size:26px} .sub{text-align:center;color:#888;font-size:13px;margin:6px 0 14px}
+.tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.tags span{font-size:10px;padding:5px 10px;border-radius:20px;background:#1a1a1a;border:1px solid #222}
+input{width:100%;padding:15px;border-radius:12px;border:1px solid #333;background:#1c1c1c;color:#fff;font-size:15px;outline:none}
+button{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#fff;color:#000;font-weight:800;font-size:16px}
+#msg{margin-top:10px;text-align:center;font-size:13px;color:#f55}
+#out{display:none;margin-top:15px;background:#1a1a1a;border-radius:12px;padding:14px}
+video{width:100%;border-radius:10px;margin-top:8px;background:#000}
+a.dl{display:block;margin-top:10px;background:#ff0050;color:#fff;text-align:center;padding:13px;border-radius:10px;text-decoration:none;font-weight:700}
+small{color:#777;font-size:11px;display:block;margin-top:8px;text-align:center}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>📥 Super Downloader</h1>
+<div class="sub">TikTok, Facebook, YouTube, Instagram - HD No Watermark</div>
+<div class="tags"><span>🎵 TikTok 100%</span><span>📘 FB Public</span><span>▶️ YouTube</span><span>📸 Insta</span></div>
+<input id="url" placeholder="Paste link here...">
+<button id="btn" onclick="download()">Download Now</button>
+<div id="msg"></div>
+<div id="out"><div id="title" style="font-size:13px"></div><video id="vid" controls></video><a id="dlink" class="dl" target="_blank">⬇️ Download Video</a><small>Long press video -> Save. If FB private, use Public Reel link</small></div>
+</div>
+<script>
+async function download(){
+  const u=document.getElementById('url').value.trim();
+  const msg=document.getElementById('msg'); const out=document.getElementById('out');
+  const btn=document.getElementById('btn'); const vid=document.getElementById('vid');
+  const dlink=document.getElementById('dlink'); const title=document.getElementById('title');
+  if(!u){msg.textContent='Link එක දාන්න මචං!';return;}
+  msg.textContent=''; btn.textContent='Loading...'; btn.disabled=true; out.style.display='none';
+  try{
+    // 1. TikTok via tikwm
+    if(u.includes('tiktok.com')){
+      const fd=new FormData(); fd.append('url',u);
+      const r=await fetch('https://www.tikwm.com/api/',{method:'POST',body:fd});
+      const j=await r.json();
+      if(j.data && (j.data.play || j.data.hdplay)){
+        const vurl=j.data.hdplay || j.data.play;
+        title.textContent=j.data.title||'TikTok Video';
+        vid.src=vurl; dlink.href=vurl; out.style.display='block'; msg.textContent='✅ Success!'; return;
+      }
+    }
+    // 2. Cobalt for FB/YT/Insta
+    const payload={url:u,vCodec:'h264',vQuality:'720'};
+    const apis=['https://api.cobalt.tools','https://co.wuk.sh','https://cobalt-api.kwiatekmiki.com'];
+    for(const api of apis){
+      try{
+        const r=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)});
+        const j=await r.json();
+        if(j.url){
+          title.textContent=j.filename||'Video Ready';
+          vid.src=j.url; dlink.href=j.url; out.style.display='block'; msg.textContent='✅ Success!'; return;
+        }
+      }catch(e){}
+    }
+    throw new Error('FB එක Private නම් වැඩ නෑ. Public Page Reel එකක් හෝ TikTok/YouTube Link එකක් දාන්න');
+  }catch(e){ msg.textContent='❌ '+e.message; }
+  finally{ btn.textContent='Download Now'; btn.disabled=false; }
+}
+</script>
+</body>
+</html>
